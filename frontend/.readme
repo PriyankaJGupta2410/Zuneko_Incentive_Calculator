@@ -1,0 +1,22 @@
+📍 Step 1: Go to frontend folder
+cd frontend
+
+📍 Step 2: Initialize Node project (if not already)
+npm init -y
+
+
+This creates:
+
+frontend/package.json
+
+📍 Step 3: Install express
+npm install express
+
+
+This creates:
+
+frontend/node_modules/
+frontend/package-lock.json
+
+
+npm install nodemon --save-dev

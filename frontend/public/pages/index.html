@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zuneko Incentive Calculator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/static/css/index.css">
+</head>
+
+<body>
+    <!-- Toast Notification Container -->
+    <div id="toastContainer"></div>
+
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <div class="logo-area">
+                <div class="logo-icon">
+                    <i class="fa-solid fa-car-side"></i>
+                </div>
+                <div class="logo-text">
+                    <h1>Zuneko Dealerships</h1>
+                    <p>Incentive Management System</p>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content Grid -->
+        <div class="main-grid">
+            <!-- Left Column: Upload & Calculation -->
+            <div class="left-column">
+                <!-- Upload Section -->
+                <section class="section-container upload-container">
+                    <div class="section-header">
+                        <div class="section-title">
+                            <i class="fa-solid fa-cloud-arrow-up"></i>
+                            <h2>Data Upload</h2>
+                        </div>
+                        <span class="section-badge">Step 1</span>
+                    </div>
+                    
+                    <div class="upload-grid">
+                        <div class="upload-card">
+                            <div class="upload-icon">
+                                <i class="fa-solid fa-file-csv"></i>
+                            </div>
+                            <h3>Sales Data</h3>
+                            <p class="upload-description">Upload monthly sales records</p>
+                            <div class="file-input-wrapper">
+                                <input type="file" id="salesFile" accept=".csv" class="file-input">
+                                <label for="salesFile" class="file-label">
+                                    <i class="fa-solid fa-paperclip"></i>
+                                    <span id="salesFileName">Choose CSV file</span>
+                                </label>
+                            </div>
+                            <button onclick="uploadSales()" class="upload-btn">
+                                <i class="fa-solid fa-upload"></i>
+                                <span>Upload Sales Data</span>
+                            </button>
+                            <span id="salesStatus" class="status"></span>
+                        </div>
+
+                        <div class="upload-card">
+                            <div class="upload-icon">
+                                <i class="fa-solid fa-file-lines"></i>
+                            </div>
+                            <h3>Incentive Rules</h3>
+                            <p class="upload-description">Upload calculation rules</p>
+                            <div class="file-input-wrapper">
+                                <input type="file" id="rulesFile" accept=".csv" class="file-input">
+                                <label for="rulesFile" class="file-label">
+                                    <i class="fa-solid fa-paperclip"></i>
+                                    <span id="rulesFileName">Choose CSV file</span>
+                                </label>
+                            </div>
+                            <button onclick="uploadRules()" class="upload-btn">
+                                <i class="fa-solid fa-upload"></i>
+                                <span>Upload Rules</span>
+                            </button>
+                            <span id="rulesStatus" class="status"></span>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Uploaded Data Preview Section -->
+                <section class="section-container data-preview-container">
+                    <div class="section-header">
+                        <div class="section-title">
+                            <i class="fa-solid fa-database"></i>
+                            <h2>Uploaded Data Summary</h2>
+                        </div>
+                    </div>
+                    
+                    <div class="data-cards">
+                        <div class="data-summary-card">
+                            <div class="data-summary-header">
+                                <i class="fa-solid fa-chart-simple"></i>
+                                <h4>Sales Data</h4>
+                            </div>
+                            <div class="data-summary-content">
+                                <div class="data-row">
+                                    <span>Total Rows:</span>
+                                    <strong id="salesTotalRows">-</strong>
+                                </div>
+                                <div class="data-row">
+                                    <span>Processed:</span>
+                                    <strong id="salesProcessed" class="text-success">-</strong>
+                                </div>
+                                <div class="data-row">
+                                    <span>Failed:</span>
+                                    <strong id="salesFailed" class="text-error">-</strong>
+                                </div>
+                                <div class="data-row">
+                                    <span>Last Upload:</span>
+                                    <strong id="salesLastUpload" class="text-muted">-</strong>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="data-summary-card">
+                            <div class="data-summary-header">
+                                <i class="fa-solid fa-gears"></i>
+                                <h4>Incentive Rules</h4>
+                            </div>
+                            <div class="data-summary-content">
+                                <div class="data-row">
+                                    <span>Total Rows:</span>
+                                    <strong id="rulesTotalRows">-</strong>
+                                </div>
+                                <div class="data-row">
+                                    <span>Processed:</span>
+                                    <strong id="rulesProcessed" class="text-success">-</strong>
+                                </div>
+                                <div class="data-row">
+                                    <span>Failed:</span>
+                                    <strong id="rulesFailed" class="text-error">-</strong>
+                                </div>
+                                <div class="data-row">
+                                    <span>Last Upload:</span>
+                                    <strong id="rulesLastUpload" class="text-muted">-</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Calculation Section -->
+                <section class="section-container calculation-container">
+                    <div class="section-header">
+                        <div class="section-title">
+                            <i class="fa-solid fa-calculator"></i>
+                            <h2>Calculate Incentives</h2>
+                        </div>
+                        <span class="section-badge">Step 2</span>
+                    </div>
+                    
+                    <div class="calculation-content">
+                        <div class="period-selector">
+                            <label for="calcPeriod">
+                                <i class="fa-solid fa-calendar-days"></i>
+                                Select Calculation Period
+                            </label>
+                            <input type="month" id="calcPeriod" value="2025-09" class="period-input">
+                        </div>
+                        <button class="calculate-btn" onclick="triggerCalculation()">
+                            <i class="fa-solid fa-bolt"></i>
+                            <span>Run Calculation</span>
+                        </button>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Right Column: Dashboard -->
+            <div class="right-column">
+                <section class="section-container dashboard-container">
+                    <div class="section-header">
+                        <div class="section-title">
+                            <i class="fa-solid fa-chart-pie"></i>
+                            <h2>Dashboard</h2>
+                        </div>
+                        <button onclick="fetchStats()" class="refresh-btn">
+                            <i class="fa-solid fa-rotate"></i>
+                        </button>
+                    </div>
+
+                    <div class="stats-grid">
+                        <div class="stat-card primary">
+                            <div class="stat-icon">
+                                <i class="fa-solid fa-sack-dollar"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h3>Total Payout</h3>
+                                <p id="totalIncentive">₹0</p>
+                            </div>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fa-solid fa-users"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h3>Staff Processed</h3>
+                                <p id="totalProcessed">0</p>
+                            </div>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fa-solid fa-chart-line"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h3>Avg. Incentive</h3>
+                                <p id="avgIncentive">₹0</p>
+                            </div>
+                        </div>
+
+                        <div class="stat-card highlight">
+                            <div class="stat-icon">
+                                <i class="fa-solid fa-trophy"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h3>Top Performer</h3>
+                                <p id="topPerformer">-</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+
+        <!-- Results Section (Full Width) -->
+        <section class="section-container results-container">
+            <div class="section-header">
+                <div class="section-title">
+                    <i class="fa-solid fa-list-check"></i>
+                    <h2>Calculation Results</h2>
+                </div>
+                <button onclick="fetchResults()" class="refresh-btn">
+                    <i class="fa-solid fa-rotate"></i>
+                    <span class="btn-text">Refresh</span>
+                </button>
+            </div>
+            
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Employee ID</th>
+                            <th>Period</th>
+                            <th>Total Incentive</th>
+                            <th>Status</th>
+                            <th>Calculated At</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="resultsBody">
+                        <tr>
+                            <td colspan="6" class="empty-state">
+                                <i class="fa-solid fa-inbox"></i>
+                                <p>No results available yet</p>
+                                <span>Upload data and calculate incentives to see results</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+
+    <!-- Details Modal -->
+    <div id="detailsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Incentive Breakdown</h2>
+                <span class="close" onclick="closeModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div id="modalContent"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/js/config.js"></script>
+    <script src="/static/js/index.js"></script>
+</body>
+
+</html>
