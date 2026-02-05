@@ -1,44 +1,63 @@
-Backend – Setup Instructions
-🔧 Tech Stack
+Backend – Setup Guide
 
-Backend Framework: FastAPI
+This section helps you run the backend service for the Incentive Calculator System.
+Follow the steps in order and you’ll be up and running in minutes.
 
-Language: Python 3.10+
+🛠️ Technology Used
 
-Database: MySQL
+FastAPI – Backend framework
 
-API Server: Uvicorn
+Python – Programming language (version 3.10 or above)
 
-✅ Prerequisites
+MySQL – Database
 
-Ensure the following are installed on your system:
+Uvicorn – Application server
 
-Python
+✅ What You Need Before Starting
+
+Please ensure the following are available on your system:
+
+Python (3.10 or higher)
+Check using:
+
 python --version
 
 
-Python 3.10 or higher is required.
+pip (Python package manager)
+Check using:
 
-pip
 pip --version
+
 
 MySQL
 
-MySQL service must be running locally
+MySQL service should be running
 
-Database should be accessible with valid credentials
+You should have valid database credentials
 
 🗄️ Database Setup
 
-Create the required MySQL database:
+Create the database:
 
 CREATE DATABASE incentive_calculator;
 
-🔐 Environment Configuration
 
-Environment variables are gitignored and are not committed to the repository.
+Use the database:
 
-Create a .env file locally and add the following values:
+USE incentive_calculator;
+
+
+Create required tables:
+
+Execute the SQL queries available in the schemas.sql file
+
+🔐 Configuration (Important)
+
+Configuration values are kept outside the codebase for security reasons.
+
+Create a .env file locally
+
+Add the following details:
 
 DB_HOST=localhost
 DB_USER=
@@ -46,28 +65,30 @@ DB_PASSWORD=
 DB_NAME=incentive_calculator
 
 
-⚠️ Ensure correct MySQL credentials are provided before starting the backend.
+⚠️ Make sure these values match your local MySQL setup.
 
-📦 Install Dependencies
+📦 Install Required Packages
 
-All required dependencies are listed in requirements.txt.
+All dependencies are already listed in the project.
+
+Run:
 
 pip install -r requirements.txt
 
-▶️ Run Backend Server
+▶️ Start the Backend Server
 
-Start the FastAPI server using Uvicorn:
+Launch the backend using the command below:
 
 uvicorn app.main:app --reload
 
 
-Backend will be available at:
+Once started, the backend will be available at:
 
 http://localhost:8000
 
 📘 API Documentation
 
-FastAPI automatically generates API documentation.
+The backend automatically provides API documentation:
 
 Swagger UI:
 
@@ -78,10 +99,10 @@ ReDoc:
 
 http://localhost:8000/redoc
 
-📝 Notes
+📝 Additional Notes
 
-.env file is excluded from version control via .gitignore
+The .env file is intentionally excluded from GitHub
 
-MySQL database must be created before running the backend
+Database must be set up before starting the backend
 
-Backend and frontend are decoupled and run independently
+Backend and frontend run as independent services
