@@ -7,8 +7,6 @@ Language: Python 3.10+
 
 Database: MySQL
 
-ORM: SQLAlchemy
-
 API Server: Uvicorn
 
 ✅ Prerequisites
