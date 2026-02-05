@@ -13,21 +13,22 @@ API Server: Uvicorn
 
 ✅ Prerequisites
 
-Make sure the following are installed:
+Ensure the following are installed on your system:
 
-Python 3.10+
-
+Python
 python --version
 
 
+Python 3.10 or higher is required.
+
 pip
-
 pip --version
-
 
 MySQL
 
 MySQL service must be running locally
+
+Database should be accessible with valid credentials
 
 🗄️ Database Setup
 
@@ -37,7 +38,7 @@ CREATE DATABASE incentive_calculator;
 
 🔐 Environment Configuration
 
-Environment variables are gitignored and not committed to the repository.
+Environment variables are gitignored and are not committed to the repository.
 
 Create a .env file locally and add the following values:
 
@@ -56,6 +57,9 @@ All required dependencies are listed in requirements.txt.
 pip install -r requirements.txt
 
 ▶️ Run Backend Server
+
+Start the FastAPI server using Uvicorn:
+
 uvicorn app.main:app --reload
 
 
@@ -64,6 +68,8 @@ Backend will be available at:
 http://localhost:8000
 
 📘 API Documentation
+
+FastAPI automatically generates API documentation.
 
 Swagger UI:
 
@@ -74,3 +80,10 @@ ReDoc:
 
 http://localhost:8000/redoc
 
+📝 Notes
+
+.env file is excluded from version control via .gitignore
+
+MySQL database must be created before running the backend
+
+Backend and frontend are decoupled and run independently

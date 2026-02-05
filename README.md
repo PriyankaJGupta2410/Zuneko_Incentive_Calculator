@@ -10,9 +10,12 @@ with frontend and backend maintained as separate applications.
 ```
 project-root/
 ├── backend/
+│   └── README.md
 ├── frontend/
+│   └── README.md
 ├── .vscode/
 └── README.md
+
 ```
 
 ---
