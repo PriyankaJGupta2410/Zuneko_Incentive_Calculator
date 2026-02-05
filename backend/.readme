@@ -1,0 +1,76 @@
+Backend – Setup Instructions
+🔧 Tech Stack
+
+Backend Framework: FastAPI
+
+Language: Python 3.10+
+
+Database: MySQL
+
+ORM: SQLAlchemy
+
+API Server: Uvicorn
+
+✅ Prerequisites
+
+Make sure the following are installed:
+
+Python 3.10+
+
+python --version
+
+
+pip
+
+pip --version
+
+
+MySQL
+
+MySQL service must be running locally
+
+🗄️ Database Setup
+
+Create the required MySQL database:
+
+CREATE DATABASE incentive_calculator;
+
+🔐 Environment Configuration
+
+Environment variables are gitignored and not committed to the repository.
+
+Create a .env file locally and add the following values:
+
+DB_HOST=localhost
+DB_USER=
+DB_PASSWORD=
+DB_NAME=incentive_calculator
+
+
+⚠️ Ensure correct MySQL credentials are provided before starting the backend.
+
+📦 Install Dependencies
+
+All required dependencies are listed in requirements.txt.
+
+pip install -r requirements.txt
+
+▶️ Run Backend Server
+uvicorn app.main:app --reload
+
+
+Backend will be available at:
+
+http://localhost:8000
+
+📘 API Documentation
+
+Swagger UI:
+
+http://localhost:8000/docs
+
+
+ReDoc:
+
+http://localhost:8000/redoc
+

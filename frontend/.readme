@@ -1,3 +1,17 @@
+
+---
+
+## 🚀 Prerequisites
+
+- Node.js (v16+ recommended)
+- npm (comes with Node.js)
+
+Check versions:
+```bash
+node -v
+npm -v
+
+⚙️ Setup Instructions
 📍 Step 1: Go to frontend folder
 cd frontend
 
@@ -7,16 +21,17 @@ npm init -y
 
 This creates:
 
-frontend/package.json
+package.json
 
-📍 Step 3: Install express
+📍 Step 3: Install Express
 npm install express
 
 
 This creates:
 
-frontend/node_modules/
-frontend/package-lock.json
+node_modules/
 
+package-lock.json
 
+📍 Step 4: Install Nodemon (for auto-restart during development)
 npm install nodemon --save-dev
