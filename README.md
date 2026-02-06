@@ -1,9 +1,13 @@
-## 🚀 Full Stack Incentive Management System
+# 🚀 Full Stack Incentive Management System
 
-This repository contains a full-stack incentive calculation system, with frontend and backend maintained as separate applications.
-It allows dealership groups to manage structured and ad-hoc incentives for sales employees, calculate totals per month, and view reports via dashboards.
+This repository contains a **full-stack incentive calculation system**, with frontend and backend maintained as separate applications.  
+It allows dealership groups to manage **structured** and **ad-hoc incentives** for sales employees, calculate totals per month, and view reports via dashboards.
+
+---
 
 ## 📁 Project Structure
+
+```
 project-root/
 ├── backend/
 │   └── README.md
@@ -11,210 +15,174 @@ project-root/
 │   └── README.md
 ├── .vscode/
 └── README.md
+```
+
+---
 
 ## 🚀 Running the Project (VS Code)
 
-Use Run & Debug (Ctrl + Shift + D) and select:
+Use **Run & Debug** (`Ctrl + Shift + D`) and select:
 
-1. Backend Only
-2. Frontend Only
-3. Frontend + Backend
+1. Backend Only  
+2. Frontend Only  
+3. Frontend + Backend  
+
+---
 
 ## 🌐 URLs
 
-Frontend: http://localhost:5500
+- **Frontend:** [http://localhost:5500](http://localhost:5500)  
+- **Backend:** [http://localhost:8000](http://localhost:8000)  
 
-Backend: http://localhost:8000
+---
 
 ## ⚙ Tech Stack
 
-## Backend:
+### Backend:
+- Python, FastAPI, MySQL, PyMySQL  
+- Pandas for in-memory calculations  
 
-Python, FastAPI
+### Frontend:
+- HTML, CSS, JavaScript  
+- Node.js, Express  
 
-MySQL, PyMySQL
-
-Pandas for in-memory calculations
-## Frontend:
-
-HTML, CSS, JavaScript
-
-Node.js, Express
+---
 
 ## 🗄 Data Storage Architecture
 
-Database Schema Structure: See schemas.sql in the backend folder.
+- **Database Schema Structure:** See `schemas.sql` in the backend folder.  
+- **Why PyMySQL + MySQL Works:**  
+  - Relational design supports joins, indexes, and constraints.  
+  - JSON fields can store structured calculation details.  
+  - PyMySQL allows batch inserts and transactions with `conn.commit()` and `cursor.execute()`.  
 
-Why PyMySQL + MySQL Works:
+### Indexing Strategies:
+- Index on `employee_id`, `sale_date`, `role`, `vehicle_type`  
+- Partition historical calculation tables by month/year for 24M+ rows  
 
-Relational design supports joins, indexes, and constraints.
-
-JSON fields can store structured calculation details.
-
-PyMySQL allows batch inserts and transactions with conn.commit() and cursor.execute().
-
-## Indexing Strategies:
-
-Index on employee_id, sale_date, role, and vehicle_type.
-
-Partition historical calculation tables by month/year for 24M+ rows.
+---
 
 ## 📜 Rule Engine Design
-## 1️⃣ Managing 500+ Rules Efficiently
 
-Store structured rules and ad-hoc rules in separate tables (structured_rules, ad_hoc_rules).
+### 1️⃣ Managing 500+ Rules Efficiently
+- Store **structured rules** and **ad-hoc rules** in separate tables (`structured_rules`, `ad_hoc_rules`)  
+- Include:  
+  - Role, vehicle type, min/max units, bonus, validity dates  
+  - `upload_file_id` for traceability  
+  - `rule_version` for versioning  
+- Pre-load all rules into memory using **pandas DataFrames** for bulk calculations  
+- Index frequently queried columns: `role`, `vehicle_type`, `valid_from`, `valid_to`  
 
-Include:
-
-Role, vehicle type, min/max units, bonus, validity dates.
-
-upload_file_id for traceability and rule_version for versioning.
-
-Pre-load all rules into memory using pandas DataFrames for bulk calculations.
-
-Use indexes on frequently queried columns: role, vehicle_type, valid_from, valid_to.
-
-## 2️⃣ Rule Versioning
-
-Use rule_version or valid_from/valid_to to store historical rules.
-
-Query rules valid for the target period:
-
+### 2️⃣ Rule Versioning
+- Use `rule_version` or `valid_from/valid_to` to store historical rules  
+- Query rules valid for the target period:
+```sql
 SELECT * FROM structured_rules
-WHERE valid_from <= %s AND valid_to >= %s
+WHERE valid_from <= %s AND valid_to >= %s;
+```
+- Keep old rules for historical calculations  
 
+### 3️⃣ Resolving Conflicting Rules
+- Add a `priority` column → higher priority overrides lower  
+- Most specific rule wins (exact match on vehicle/role)  
+- Optionally, sum all applicable rules if cumulative bonuses are allowed  
+- Log all applied rules per sale in JSON for auditing  
 
-Keep old rules for historical calculations.
+### 4️⃣ Rules Engine Implementation
+| Option | Pros | Cons | Recommendation |
+|--------|------|------|----------------|
+| Drools / Commercial engine | Handles complex rules, conflicts, versioning | Java-based, not Python-native | Not needed unless rules are extremely complex |
+| Custom Python | Fully controllable, integrates with FastAPI + pandas | Must handle conflicts and versioning carefully | Recommended: Current pandas + PyMySQL approach |
 
-## 3️⃣ Resolving Conflicting Rules
+---
 
-Add a priority column → higher priority overrides lower.
+## 🧮 Calculation Performance
 
-Most specific rule wins (exact match on vehicle/role).
+### 1️⃣ Naive Algorithm Problem
+Looping through each employee × each rule → O(n × m)  
+Example: 1M employees × 500 rules = 500M iterations → very slow  
 
-Optionally, sum all applicable rules if cumulative bonuses are allowed.
+### 2️⃣ Performance Optimization Strategies
 
-Log all applied rules per sale in JSON for auditing.
-
-## 4️⃣ Rules Engine Implementation
-Option	Pros	Cons	Recommendation
-Drools / Commercial engine	Handles complex rules, conflicts, versioning	Java-based, not Python-native	Not needed unless rules are extremely complex
-Custom Python	Fully controllable, integrates with FastAPI + pandas	Must handle conflicts and versioning carefully	Recommended: Current pandas + PyMySQL approach
-🧮 Calculation Performance
-1️⃣ Naive Algorithm Problem
-
-Looping through each employee × each rule → O(n × m).
-
-Example: 1M employees × 500 rules = 500M iterations → slow.
-
-## 2️⃣ Performance Optimization Strategies
-
-## a) Pre-computation:
-
+**a) Pre-computation:**  
 Aggregate sales per employee, role, vehicle type before applying rules:
+```python
+df_sales_agg = df_sales.groupby(['employee_id', 'role', 'vehicle_type'])                        .agg({'quantity': 'sum'}).reset_index()
+```
 
-df_sales_agg = df_sales.groupby(['employee_id', 'role', 'vehicle_type']) \
-                       .agg({'quantity': 'sum'}).reset_index()
+**b) Caching:**  
+Cache rules in memory (pandas DataFrame or Python dict).  
+Use Redis if cross-process caching is needed.  
 
+**c) Parallel Processing:**  
+Split employees into batches and process in parallel using `multiprocessing` or `concurrent.futures`.  
+Example: 1M employees → 10 parallel workers → 10× speedup  
 
-## b) Caching:
-
-Cache rules in memory (pandas DataFrame or Python dict).
-
-Use Redis if cross-process caching is needed.
-
-## c) Parallel Processing:
-
-Split employees into batches and process in parallel using multiprocessing or concurrent.futures.
-
-Example: 1M employees → 10 parallel workers → 10× speedup.
-
-## d) Vectorized Calculations:
-
+**d) Vectorized Calculations:**  
 Use pandas merges and vectorized operations instead of row-by-row loops:
-
-df_rules_applied = pd.merge(df_sales_agg, df_rules, 
-                            on=['role', 'vehicle_type'])
+```python
+df_rules_applied = pd.merge(df_sales_agg, df_rules, on=['role', 'vehicle_type'])
 df_rules_applied = df_rules_applied[
     (df_rules_applied['quantity'] >= df_rules_applied['min_units']) &
     (df_rules_applied['quantity'] <= df_rules_applied['max_units'])
 ]
-df_rules_applied['structured_amount'] = df_rules_applied['incentive_amount_inr'] + \
-                                        (df_rules_applied['quantity'] - df_rules_applied['min_units']).clip(lower=0) * \
-                                        df_rules_applied['bonus_per_unit_inr']
+df_rules_applied['structured_amount'] = df_rules_applied['incentive_amount_inr'] +                                         (df_rules_applied['quantity'] - df_rules_applied['min_units']).clip(lower=0) *                                         df_rules_applied['bonus_per_unit_inr']
+```
 
+**e) Incremental Calculations:**  
+Only process new or updated sales since the last calculation:  
+- Add `calculated_flag` column in `sales_transactions`  
+- Query only where `calculated_flag = 0` or `sale_date > last_calc_date`  
 
-## e) Incremental Calculations:
-
-Only process new or updated sales since the last calculation:
-
-Add calculated_flag column in sales_transactions.
-
-Query only where calculated_flag = 0 or sale_date > last_calc_date.
+---
 
 ## 📄 Text Parsing at Scale
+- **Problem:** Manual PDF parsing is slow and error-prone  
+- **Solutions:**  
+  - OCR (Tesseract / AWS Textract / Google Vision) → convert PDFs/images to text  
+  - NLP / ML Pipelines: Regex, NER, or ML models to extract schemes, roles, bonuses, and conditions  
+  - Template-Based Parsing for standard layouts (more accurate than OCR+NLP)  
 
-Problem: Manual PDF parsing is slow and error-prone.
+- **Validation:**  
+  - Auto-check numeric fields, date ranges, and role/vehicle consistency  
+  - Human-in-the-loop validation for low-confidence extractions  
+  - Keep original PDF for auditing  
 
-Solutions:
-
-OCR (Tesseract / AWS Textract / Google Vision) → convert PDFs/images to text.
-
-## NLP / ML Pipelines:
-
-Regex, NER, or ML models to extract schemes, roles, bonuses, and conditions.
-
-Template-Based Parsing:
-
-Works if PDFs have standard layouts; more accurate than OCR + NLP.
-
-## Validation:
-
-Auto-check numeric fields, date ranges, and role/vehicle consistency.
-
-Human-in-the-loop validation for low-confidence extractions.
-
-Keep original PDF for auditing.
+---
 
 ## ⏱ Real-Time vs Batch Processing
+- **Monthly batch:** Simple, deterministic, easy to audit  
+- **Real-time calculation:** Optional for dashboards or top-performer alerts; complex for full payroll  
+- **Streaming (Kafka):** Near real-time metric updates while batch handles payroll  
+- **Recommendation:** Monthly batch + optional real-time KPI dashboard  
 
-Monthly batch: Simpler, deterministic, easy to audit.
-
-Real-time calculation: Optional for dashboards or top-performer alerts; complex for full payroll.
-
-Streaming (Kafka): Can update metrics in near real-time while batch handles payroll.
-
-Recommendation: Monthly batch + optional real-time KPI dashboard.
+---
 
 ## 🏢 Multi-Tenancy
+- Row-level security (add `group_id` or `branch_id`) for multiple dealerships → cost-efficient  
+- Separate DB instances for high-value clients  
+- Ensure all queries are filtered by tenant to avoid data leaks  
 
-Row-level security (add group_id or branch_id) for multiple dealerships → cost-efficient.
-
-Separate DB instances for high-value clients.
-
-Ensure all queries are filtered by tenant to avoid data leaks.
+---
 
 ## ❓ Handling Uncertainty in Rules
+- Extract structured rules using NLP/ML  
+- Assign confidence scores; low-confidence rules need human validation  
+- Ambiguous rules → mark as "manual review required"  
+- Store original text + parsed rule for auditing and dispute resolution  
 
-Extract structured rules using NLP/ML.
-
-Assign confidence scores; low-confidence rules need human validation.
-
-Ambiguous rules → mark as "manual review required".
-
-Store original text + parsed rule for auditing and dispute resolution.
+---
 
 ## 📊 Auditability & Compliance
+- Store full calculation logs per employee (sales, rules applied, totals)  
+- Provide detailed breakdown reports for HR/finance  
+- Retain audit logs for 3–5 years; keep original PDFs  
+- Mask/encrypt PII; enforce access control (GDPR-compliant)  
 
-Store full calculation logs per employee (sales, rules applied, totals).
-
-Provide detailed breakdown reports for HR/finance.
-
-Retain audit logs for 3–5 years; keep original PDFs.
-
-Mask/encrypt PII; enforce access control (GDPR-compliant).
+---
 
 ## 🧩 ER Diagram (PlantUML)
+```plantuml
 @startuml
 entity uploaded_files { id : UUID <<PK>>, file_name, file_type, uploaded_at, created_at }
 entity sales_transactions { id : UUID <<PK>>, employee_id, branch, role, vehicle_model, vehicle_type, quantity, sale_date, upload_file_id <<FK>>, created_at }
@@ -230,11 +198,14 @@ uploaded_files ||--o{ adhoc_incentive_rules
 calculation_runs ||--o{ incentive_results
 incentive_results ||--o{ incentive_rule_applications
 @enduml
+```
+
+---
 
 ## 🏗 System Architecture
 
-User Flow (Non-Technical):
-
+### User Flow (Non-Technical)
+```plantuml
 @startuml
 actor "Operations / Finance Team" as User
 rectangle "ZUNEKO Incentive System" {
@@ -254,10 +225,10 @@ Calc --> Results : Calculate incentives
 Results --> Breakdown : See how amount was calculated
 Results --> Export : Download payroll files
 @enduml
+```
 
-
-## Technical Architecture:
-
+### Technical Architecture
+```plantuml
 @startuml
 actor User as "Ops / Finance User"
 package "Frontend" { component Dashboard; component Upload_Data_UI; component Run_Calculation_UI; component Incentive_Results_UI; component Incentive_Breakdown_View }
@@ -290,97 +261,54 @@ API_Gateway --> Export_Service
 Export_Service --> Relational_DB
 Export_Service --> File_Storage
 @enduml
+```
+
+---
 
 ## 🧮 Incentive Calculation Logic
 
-## Step 1: Fetch total sales per employee & vehicle type for the month:
-
+1. **Fetch total sales per employee & vehicle type for the month:**
+```sql
 SELECT employee_id, vehicle_type, SUM(quantity) AS total_quantity
 FROM sales_transactions
 WHERE sale_date BETWEEN '2025-09-01' AND '2025-09-30'
 GROUP BY employee_id, vehicle_type;
+```
 
-
-## Step 2: Apply Structured Rules:
-
-Structured Amount = Base Amount + (Units Sold - Min Units) × Bonus Per Unit
-
+2. **Apply Structured Rules:**  
+Structured Amount = Base Amount + (Units Sold - Min Units) × Bonus Per Unit  
 
 Example:
 
-Compact (12 units) → ₹10,000 + (12-10)*750 = ₹11,500
+| Vehicle Type | Units | Structured Amount |
+|--------------|-------|-----------------|
+| Compact      | 12    | ₹11,500         |
+| Mid-Size     | 10    | ₹13,800         |
+| SUV          | 8     | ₹15,000         |
+| Commercial   | 15    | ₹7,000          |
 
-Mid-Size (10 units) → ₹12,000 + (10-8)*900 = ₹13,800
+Structured Total: ₹47,300  
 
-SUV (8 units) → ₹15,000 + 0*1,300 = ₹15,000
+3. **Apply Ad-Hoc Rules:**  
 
-Commercial (15 units) → ₹5,000 + (15-10)*400 = ₹7,000
+| Scheme Name | Amount |
+|------------|--------|
+| Branch Target Achievement | ₹10,000 |
+| Consistency Reward        | ₹4,000  |
 
-Structured Total: ₹47,300
+Ad-Hoc Subtotal: ₹14,000  
 
-## Step 3: Apply Ad-Hoc Rules:
+4. **Total Incentive:** ₹61,300  
 
-Branch Target Achievement → ₹10,000
-
-Consistency Reward → ₹4,000
-
-Ad-Hoc Subtotal: ₹14,000
-
-## Step 4: Total Incentive: ₹61,300
-
-## Step 5: Store calculation in incentive_calculations table with breakdown JSON.
-
-## 📈 Experience with Scale & System Design Considerations
-
-This project is designed for **real-world incentive systems**, handling large datasets, complex rules, and performance considerations.
-
-**Experience with Incentive / Commission Systems:**
-- Role-based incentives (ASM, RM, etc.)  
-- Vehicle-type-based incentive slabs  
-- Time-bound rules  
-- Branch-level performance incentives  
-- Monthly aggregation and recalculation  
-
-**Handling Rule Engines at Scale:**
-- Rule isolation and dynamic evaluation  
-- Filtering rules by time window  
-- Deterministic selection of best matching slab  
-- Supports structured and ad-hoc rules  
+5. **Store calculation in `incentive_calculations` table with breakdown JSON**  
 
 ---
 
-## 👩‍💻 My Relevant Experience
+## 👩‍💻 Relevant Experience
 
-I’ve designed and implemented this system drawing from hands-on experience in **sales performance and commission management**.  
+- Built full-scale **incentive engines** for sales teams  
+- Backend: FastAPI + PyMySQL, with robust transaction management  
+- Frontend: Interactive dashboards for uploading, calculation, and reporting  
 
-### 1️⃣ Incentive & Commission Systems
-- Built full-scale incentive engines for sales teams  
-- Implemented role-based and branch-based rules  
-- Transparent and auditable calculations  
-
-### 2️⃣ Rule Engines & Business Logic
-- Scalable rule evaluation for large datasets  
-- Dynamic rules based on role, vehicle type, branch targets  
-- Rules can be updated without affecting historical calculations  
-
-### 3️⃣ Data Handling & Parsing
-- Structured CSV inputs for sales data and rules  
-- Robust validation and error handling  
-
-### 4️⃣ Backend & API Development
-- FastAPI REST APIs for data upload, calculation, and reporting  
-- Robust transaction management and logging  
-
-### 5️⃣ Frontend & User Experience
-- Interactive dashboards for uploading, calculation, and reporting  
-- User-friendly and intuitive design  
-
-### 6️⃣ Scalability & Performance
-- Optimized for large datasets with batch processing, caching, and stateless design  
-- High-volume incentive calculations supported  
-
-**💡 My Approach:**  
-I focus on building systems that are **accurate, transparent, scalable**, and **easy for end-users**.
-
----
-
+**💡 Approach:**  
+Systems that are **accurate, transparent, scalable**, and **easy for end-users**  
