@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field
-from datetime import date
-from typing import Optional,List
+from datetime import date,datetime
+from typing import List, Optional, Dict, Any
 
 class SalesRow(BaseModel):
     employee_id: str = Field(..., description="Employee ID of the salesperson")
@@ -33,6 +33,24 @@ class AdHocSchemeRow(BaseModel):
 class IncentiveCalculationRequest(BaseModel):
     period: str  # "2025-09"
 
+# ----------------------------
+# Ad-Hoc Details Model
+# ----------------------------
+class AdHocDetail(BaseModel):
+    scheme_name: str
+    condition: str
+    amount: float
+
+# ----------------------------
+# Incentive Details Model
+# ----------------------------
+class IncentiveDetails(BaseModel):
+    structured: List[Dict[str, Any]] = []
+    ad_hoc: List[AdHocDetail] = []
+
+# ----------------------------
+# Employee Incentive Model
+# ----------------------------
 class EmployeeIncentive(BaseModel):
     employee_id: str
     branch: str
@@ -42,25 +60,43 @@ class EmployeeIncentive(BaseModel):
     adhoc_incentive: float
     total_incentive: float
     status: str
+    details: IncentiveDetails
 
+# ----------------------------
+# Top Performer Model
+# ----------------------------
+class TopPerformer(BaseModel):
+    employee_id: Optional[str] = None
+    branch: Optional[str] = None
+    role: Optional[str] = None
+    total_incentive: float = 0.0
+
+# ----------------------------
+# Summary Model for GETincentiveresults
+# ----------------------------
+class Summary(BaseModel):
+    total_records: int
+    total_incentives: float
+    top_performer: Optional[Dict[str, Any]] = None  # Nested dict for Pydantic v2
+
+# ----------------------------
+# Incentive Response Model
+# ----------------------------
 class IncentiveResponse(BaseModel):
     status: bool
     message: str
+    summary: Summary
     data: List[EmployeeIncentive]
 
-class CalculationResultSchema(BaseModel):
-    employee_id: str
-    period_month: str
-    total_incentive: float
-    breakdown_json: str
-    status: str
+# ----------------------------
+# Dashboard Response Models
+# ----------------------------
+class DashboardResponse(BaseModel):
+    total_incentive_calculated: float
+    salesperson_processed: int
+    top_performer: TopPerformer
+    last_calculation_run: Optional[datetime] = None
 
-    class Config:
-        from_attributes = True
-
-
-class CalculationStatsSchema(BaseModel):
-    total_incentive: float
-    total_salespeople: int
-    avg_incentive: float
-    top_performer: Optional[str]
+class DashboardAPIResponse(BaseModel):
+    status: bool
+    data: DashboardResponse

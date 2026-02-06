@@ -1,286 +1,373 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zuneko Incentive Calculator</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>ZUNEKO - Incentive Calculation System</title>
     <link rel="stylesheet" href="/static/css/index.css">
 </head>
-
 <body>
-    <!-- Toast Notification Container -->
-    <div id="toastContainer"></div>
-
-    <div class="container">
-        <!-- Header -->
-        <header>
-            <div class="logo-area">
-                <div class="logo-icon">
-                    <i class="fa-solid fa-car-side"></i>
-                </div>
-                <div class="logo-text">
-                    <h1>Zuneko Dealerships</h1>
-                    <p>Incentive Management System</p>
+    <!-- Header -->
+    <header class="app-header">
+        <div class="header-content">
+            <div class="brand">
+                <div class="brand-logo">Z</div>
+                <div class="brand-info">
+                    <h1 class="brand-name">ZUNEKO</h1>
+                    <p class="brand-subtitle">Incentive Calculation System</p>
                 </div>
             </div>
-        </header>
-
-        <!-- Main Content Grid -->
-        <div class="main-grid">
-            <!-- Left Column: Upload & Calculation -->
-            <div class="left-column">
-                <!-- Upload Section -->
-                <section class="section-container upload-container">
-                    <div class="section-header">
-                        <div class="section-title">
-                            <i class="fa-solid fa-cloud-arrow-up"></i>
-                            <h2>Data Upload</h2>
-                        </div>
-                        <span class="section-badge">Step 1</span>
-                    </div>
-                    
-                    <div class="upload-grid">
-                        <div class="upload-card">
-                            <div class="upload-icon">
-                                <i class="fa-solid fa-file-csv"></i>
-                            </div>
-                            <h3>Sales Data</h3>
-                            <p class="upload-description">Upload monthly sales records</p>
-                            <div class="file-input-wrapper">
-                                <input type="file" id="salesFile" accept=".csv" class="file-input">
-                                <label for="salesFile" class="file-label">
-                                    <i class="fa-solid fa-paperclip"></i>
-                                    <span id="salesFileName">Choose CSV file</span>
-                                </label>
-                            </div>
-                            <button onclick="uploadSales()" class="upload-btn">
-                                <i class="fa-solid fa-upload"></i>
-                                <span>Upload Sales Data</span>
-                            </button>
-                            <span id="salesStatus" class="status"></span>
-                        </div>
-
-                        <div class="upload-card">
-                            <div class="upload-icon">
-                                <i class="fa-solid fa-file-lines"></i>
-                            </div>
-                            <h3>Incentive Rules</h3>
-                            <p class="upload-description">Upload calculation rules</p>
-                            <div class="file-input-wrapper">
-                                <input type="file" id="rulesFile" accept=".csv" class="file-input">
-                                <label for="rulesFile" class="file-label">
-                                    <i class="fa-solid fa-paperclip"></i>
-                                    <span id="rulesFileName">Choose CSV file</span>
-                                </label>
-                            </div>
-                            <button onclick="uploadRules()" class="upload-btn">
-                                <i class="fa-solid fa-upload"></i>
-                                <span>Upload Rules</span>
-                            </button>
-                            <span id="rulesStatus" class="status"></span>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Uploaded Data Preview Section -->
-                <section class="section-container data-preview-container">
-                    <div class="section-header">
-                        <div class="section-title">
-                            <i class="fa-solid fa-database"></i>
-                            <h2>Uploaded Data Summary</h2>
-                        </div>
-                    </div>
-                    
-                    <div class="data-cards">
-                        <div class="data-summary-card">
-                            <div class="data-summary-header">
-                                <i class="fa-solid fa-chart-simple"></i>
-                                <h4>Sales Data</h4>
-                            </div>
-                            <div class="data-summary-content">
-                                <div class="data-row">
-                                    <span>Total Rows:</span>
-                                    <strong id="salesTotalRows">-</strong>
-                                </div>
-                                <div class="data-row">
-                                    <span>Processed:</span>
-                                    <strong id="salesProcessed" class="text-success">-</strong>
-                                </div>
-                                <div class="data-row">
-                                    <span>Failed:</span>
-                                    <strong id="salesFailed" class="text-error">-</strong>
-                                </div>
-                                <div class="data-row">
-                                    <span>Last Upload:</span>
-                                    <strong id="salesLastUpload" class="text-muted">-</strong>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="data-summary-card">
-                            <div class="data-summary-header">
-                                <i class="fa-solid fa-gears"></i>
-                                <h4>Incentive Rules</h4>
-                            </div>
-                            <div class="data-summary-content">
-                                <div class="data-row">
-                                    <span>Total Rows:</span>
-                                    <strong id="rulesTotalRows">-</strong>
-                                </div>
-                                <div class="data-row">
-                                    <span>Processed:</span>
-                                    <strong id="rulesProcessed" class="text-success">-</strong>
-                                </div>
-                                <div class="data-row">
-                                    <span>Failed:</span>
-                                    <strong id="rulesFailed" class="text-error">-</strong>
-                                </div>
-                                <div class="data-row">
-                                    <span>Last Upload:</span>
-                                    <strong id="rulesLastUpload" class="text-muted">-</strong>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Calculation Section -->
-                <section class="section-container calculation-container">
-                    <div class="section-header">
-                        <div class="section-title">
-                            <i class="fa-solid fa-calculator"></i>
-                            <h2>Calculate Incentives</h2>
-                        </div>
-                        <span class="section-badge">Step 2</span>
-                    </div>
-                    
-                    <div class="calculation-content">
-                        <div class="period-selector">
-                            <label for="calcPeriod">
-                                <i class="fa-solid fa-calendar-days"></i>
-                                Select Calculation Period
-                            </label>
-                            <input type="month" id="calcPeriod" value="2025-09" class="period-input">
-                        </div>
-                        <button class="calculate-btn" onclick="triggerCalculation()">
-                            <i class="fa-solid fa-bolt"></i>
-                            <span>Run Calculation</span>
-                        </button>
-                    </div>
-                </section>
-            </div>
-
-            <!-- Right Column: Dashboard -->
-            <div class="right-column">
-                <section class="section-container dashboard-container">
-                    <div class="section-header">
-                        <div class="section-title">
-                            <i class="fa-solid fa-chart-pie"></i>
-                            <h2>Dashboard</h2>
-                        </div>
-                        <button onclick="fetchStats()" class="refresh-btn">
-                            <i class="fa-solid fa-rotate"></i>
-                        </button>
-                    </div>
-
-                    <div class="stats-grid">
-                        <div class="stat-card primary">
-                            <div class="stat-icon">
-                                <i class="fa-solid fa-sack-dollar"></i>
-                            </div>
-                            <div class="stat-content">
-                                <h3>Total Payout</h3>
-                                <p id="totalIncentive">₹0</p>
-                            </div>
-                        </div>
-
-                        <div class="stat-card">
-                            <div class="stat-icon">
-                                <i class="fa-solid fa-users"></i>
-                            </div>
-                            <div class="stat-content">
-                                <h3>Staff Processed</h3>
-                                <p id="totalProcessed">0</p>
-                            </div>
-                        </div>
-
-                        <div class="stat-card">
-                            <div class="stat-icon">
-                                <i class="fa-solid fa-chart-line"></i>
-                            </div>
-                            <div class="stat-content">
-                                <h3>Avg. Incentive</h3>
-                                <p id="avgIncentive">₹0</p>
-                            </div>
-                        </div>
-
-                        <div class="stat-card highlight">
-                            <div class="stat-icon">
-                                <i class="fa-solid fa-trophy"></i>
-                            </div>
-                            <div class="stat-content">
-                                <h3>Top Performer</h3>
-                                <p id="topPerformer">-</p>
-                            </div>
-                        </div>
-                    </div>
-                </section>
+            <div class="header-actions">
+                <div class="user-profile">
+                    <span class="user-name">Admin User</span>
+                    <span class="user-role">Operations</span>
+                </div>
             </div>
         </div>
+    </header>
 
-        <!-- Results Section (Full Width) -->
-        <section class="section-container results-container">
-            <div class="section-header">
-                <div class="section-title">
-                    <i class="fa-solid fa-list-check"></i>
-                    <h2>Calculation Results</h2>
-                </div>
-                <button onclick="fetchResults()" class="refresh-btn">
-                    <i class="fa-solid fa-rotate"></i>
-                    <span class="btn-text">Refresh</span>
-                </button>
+    <!-- Navigation -->
+    <nav class="main-nav">
+        <button class="nav-btn active" data-screen="dashboard">
+            <span class="nav-icon">📊</span>
+            <span>Dashboard</span>
+        </button>
+        <button class="nav-btn" data-screen="upload">
+            <span class="nav-icon">📤</span>
+            <span>Upload Data</span>
+        </button>
+        <button class="nav-btn" data-screen="calculate">
+            <span class="nav-icon">⚙️</span>
+            <span>Run Calculations</span>
+        </button>
+        <button class="nav-btn" data-screen="results">
+            <span class="nav-icon">📋</span>
+            <span>View Results</span>
+        </button>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        
+        <!-- DASHBOARD SCREEN -->
+        <section id="dashboard" class="screen active">
+            <div class="screen-header">
+                <h2>Dashboard</h2>
+                <p class="screen-description">System overview and calculation status</p>
             </div>
-            
-            <div class="table-wrapper">
-                <table>
+
+            <!-- KPI Cards -->
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-label">Total Incentives Calculated</div>
+                    <div class="kpi-value" id="dashTotalIncentives">₹0</div>
+                    <div class="kpi-meta">Current Month</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Salespeople Processed</div>
+                    <div class="kpi-value" id="dashTotalEmployees">0</div>
+                    <div class="kpi-meta">Across all branches</div>
+                </div>
+                <div class="kpi-card kpi-highlight">
+                    <div class="kpi-label">Top Performer</div>
+                    <div class="kpi-value" id="dashTopPerformer">-</div>
+                    <div class="kpi-meta">Highest incentive earned</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Last Calculation Run</div>
+                    <div class="kpi-value" id="dashLastRun">-</div>
+                    <div class="kpi-meta status-success" id="dashStatus">● Not yet run</div>
+                </div>
+            </div>
+
+            <!-- Primary Actions -->
+            <div class="action-section">
+                <h3>Primary Actions</h3>
+                <div class="action-grid">
+                    <button class="action-card" data-navigate="upload">
+                        <div class="action-icon">📤</div>
+                        <div class="action-content">
+                            <h4>Upload Data</h4>
+                            <p>Import sales data and incentive rules</p>
+                        </div>
+                    </button>
+                    <button class="action-card" data-navigate="calculate">
+                        <div class="action-icon">⚙️</div>
+                        <div class="action-content">
+                            <h4>Run Calculation</h4>
+                            <p>Process incentives for selected period</p>
+                        </div>
+                    </button>
+                    <button class="action-card" data-navigate="results">
+                        <div class="action-icon">📋</div>
+                        <div class="action-content">
+                            <h4>View Results</h4>
+                            <p>Review calculated incentives and exceptions</p>
+                        </div>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- UPLOAD DATA SCREEN -->
+        <section id="upload" class="screen">
+            <div class="screen-header">
+                <h2>Upload Data</h2>
+                <p class="screen-description">Import sales data and configure incentive rules</p>
+            </div>
+
+            <!-- Sales Data Upload -->
+            <div class="upload-section">
+                <h3>A. Sales Data Upload</h3>
+                <div class="upload-card">
+                    <div class="upload-area">
+                        <input type="file" id="salesFileInput" accept=".csv" hidden>
+                        <div class="upload-dropzone" id="salesDropzone">
+                            <div class="upload-icon">📁</div>
+                            <p class="upload-text">Drop CSV file here or click to browse</p>
+                            <p class="upload-hint">Required format: .csv (max 50MB)</p>
+                        </div>
+                    </div>
+                    
+                    <div class="required-columns">
+                        <h4>Required Columns</h4>
+                        <div class="column-list">
+                            <span class="column-badge">Employee_ID</span>
+                            <span class="column-badge">Branch</span>
+                            <span class="column-badge">Role</span>
+                            <span class="column-badge">Vehicle_Sold</span>
+                            <span class="column-badge">Units_Sold</span>
+                            <span class="column-badge">Sale_Date</span>
+                        </div>
+                    </div>
+
+                    <div id="salesPreview" class="data-preview" style="display: none;">
+                        <h4>Data Preview</h4>
+                        <div class="preview-meta">
+                            <span id="salesRowCount"></span>
+                            <span id="salesValidation"></span>
+                        </div>
+                        <div class="table-wrapper">
+                            <table class="preview-table" id="salesPreviewTable"></table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Structured Rules Upload -->
+            <div class="upload-section">
+                <h3>B. Structured Incentive Rules Upload</h3>
+                <div class="upload-card">
+                    <div class="upload-area">
+                        <input type="file" id="rulesFileInput" accept=".csv" hidden>
+                        <div class="upload-dropzone" id="rulesDropzone">
+                            <div class="upload-icon">📋</div>
+                            <p class="upload-text">Drop CSV file here or click to browse</p>
+                            <p class="upload-hint">Structured incentive rules (slab-based)</p>
+                        </div>
+                    </div>
+
+                    <div class="required-columns">
+                        <h4>Required Columns</h4>
+                        <div class="column-list">
+                            <span class="column-badge">Role</span>
+                            <span class="column-badge">Vehicle_Type</span>
+                            <span class="column-badge">Min_Units</span>
+                            <span class="column-badge">Max_Units</span>
+                            <span class="column-badge">Incentive_Per_Unit</span>
+                            <span class="column-badge">Valid_From</span>
+                            <span class="column-badge">Valid_To</span>
+                        </div>
+                    </div>
+
+                    <div id="rulesStatus" class="upload-status" style="display: none;"></div>
+                </div>
+            </div>
+
+            <!-- Ad-Hoc Rules Upload -->
+            <div class="upload-section">
+                <h3>C. Ad-Hoc Incentive Rules Upload</h3>
+                <div class="upload-card">
+                    <div class="upload-tabs">
+                        <button class="tab-btn active" data-tab="file">File Upload</button>
+                        <button class="tab-btn" data-tab="manual">Manual Entry</button>
+                    </div>
+
+                    <div class="tab-content active" id="fileTab">
+                        <div class="upload-area">
+                            <input type="file" id="adhocFileInput" accept=".txt,.pdf" hidden>
+                            <div class="upload-dropzone" id="adhocDropzone">
+                                <div class="upload-icon">📄</div>
+                                <p class="upload-text">Drop TXT or PDF file here or click to browse</p>
+                                <p class="upload-hint">Unstructured ad-hoc rules or special incentives</p>
+                            </div>
+                        </div>
+
+                        <div id="adhocParsed" class="parsed-rules" style="display: none;">
+                            <h4>Parsed Rules Summary</h4>
+                            <div class="confidence-indicator">
+                                <span>Parsing Confidence:</span>
+                                <span class="confidence-badge" id="confidenceBadge">High</span>
+                            </div>
+                            <div id="parsedContent" class="parsed-content"></div>
+                        </div>
+                    </div>
+
+                    <div class="tab-content" id="manualTab">
+                        <div class="form-group">
+                            <label>Rule Description</label>
+                            <textarea id="adhocText" rows="6" placeholder="e.g., All salespeople who sell 3+ SUVs in September get ₹5,000 bonus"></textarea>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Valid From</label>
+                                <input type="date" id="adhocFrom">
+                            </div>
+                            <div class="form-group">
+                                <label>Valid To</label>
+                                <input type="date" id="adhocTo">
+                            </div>
+                            <div class="form-group">
+                                <label>Priority</label>
+                                <select id="adhocPriority">
+                                    <option value="high">High</option>
+                                    <option value="medium" selected>Medium</option>
+                                    <option value="low">Low</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button class="btn-primary" id="addAdhocBtn">Add Ad-Hoc Rule</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- RUN CALCULATIONS SCREEN -->
+        <section id="calculate" class="screen">
+            <div class="screen-header">
+                <h2>Run Calculations</h2>
+                <p class="screen-description">Execute incentive calculation engine</p>
+            </div>
+
+            <div class="calc-container">
+                <div class="calc-inputs">
+                    <h3>Calculation Parameters</h3>
+                    
+                    <div class="form-group">
+                        <label>Select Month</label>
+                        <select id="calcMonth">
+                            <option value="2025-09" selected>September 2025</option>
+                            <option value="2025-08">August 2025</option>
+                            <option value="2025-07">July 2025</option>
+                            <option value="2025-06">June 2025</option>
+                            <option value="2025-05">May 2025</option>
+                            <option value="2025-04">April 2025</option>
+                            <option value="2025-03">March 2025</option>
+                            <option value="2025-02">February 2025</option>
+                            <option value="2025-01">January 2025</option>
+                        </select>
+                    </div>
+
+                    <button class="btn-primary btn-large" id="runCalcBtn">
+                        <span class="btn-icon">▶</span>
+                        Run Calculation
+                    </button>
+                </div>
+
+                <div class="calc-output" id="calcOutput" style="display: none;">
+                    <h3>Calculation Results</h3>
+                    
+                    <div class="output-status">
+                        <div class="status-indicator" id="statusIndicator">
+                            <div class="spinner"></div>
+                            <span id="statusText">Processing...</span>
+                        </div>
+                    </div>
+
+                    <div class="output-metrics">
+                        <div class="metric-row">
+                            <span class="metric-label">Records Processed:</span>
+                            <span class="metric-value" id="recordsProcessed">-</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-label">Total Incentive:</span>
+                            <span class="metric-value success" id="successCount">-</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-label">Exceptions:</span>
+                            <span class="metric-value error" id="exceptionsCount">-</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-label">Execution Time:</span>
+                            <span class="metric-value" id="execTime">-</span>
+                        </div>
+                    </div>
+
+                    <button class="btn-secondary" id="viewResultsBtn">View Detailed Results →</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- RESULTS SCREEN -->
+        <section id="results" class="screen">
+            <div class="screen-header">
+                <div>
+                    <h2>Incentive Results</h2>
+                    <p class="screen-description">Calculated incentives for September 2025</p>
+                </div>
+            </div>
+
+            <div class="results-summary">
+                <div class="summary-item">
+                    <span class="summary-label">Total Records:</span>
+                    <span class="summary-value" id="resultsTotalRecords">-</span>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-label">Total Incentives:</span>
+                    <span class="summary-value" id="resultsTotalIncentives">-</span>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-label">Top Performer:</span>
+                    <span class="summary-value" id="resultsTopPerformer">-</span>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <table class="results-table">
                     <thead>
                         <tr>
                             <th>Employee ID</th>
-                            <th>Period</th>
-                            <th>Total Incentive</th>
+                            <th>Branch</th>
+                            <th>Role</th>
+                            <th>Total Units</th>
+                            <th>Structured (₹)</th>
+                            <th>Ad-Hoc (₹)</th>
+                            <th>Total (₹)</th>
                             <th>Status</th>
-                            <th>Calculated At</th>
-                            <th>Actions</th>
+                            <th>Action</th>
                         </tr>
                     </thead>
-                    <tbody id="resultsBody">
+                    <tbody id="resultsTableBody">
                         <tr>
-                            <td colspan="6" class="empty-state">
-                                <i class="fa-solid fa-inbox"></i>
-                                <p>No results available yet</p>
-                                <span>Upload data and calculate incentives to see results</span>
-                            </td>
+                            <td colspan="9" class="no-data">Loading data...</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
         </section>
-    </div>
 
-    <!-- Details Modal -->
-    <div id="detailsModal" class="modal">
-        <div class="modal-content">
+    </main>
+
+    <!-- BREAKDOWN MODAL -->
+    <div class="modal" id="breakdownModal">
+        <div class="modal-overlay" onclick="closeBreakdown()"></div>
+        <div class="modal-panel">
             <div class="modal-header">
-                <h2>Incentive Breakdown</h2>
-                <span class="close" onclick="closeModal()">&times;</span>
+                <h3>Incentive Breakdown</h3>
+                <button class="modal-close" onclick="closeBreakdown()">×</button>
             </div>
-            <div class="modal-body">
-                <div id="modalContent"></div>
+            <div class="modal-body" id="breakdownContent">
+                <!-- Content populated by JavaScript -->
             </div>
         </div>
     </div>
@@ -288,5 +375,4 @@
     <script src="/static/js/config.js"></script>
     <script src="/static/js/index.js"></script>
 </body>
-
 </html>
