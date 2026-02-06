@@ -1,108 +1,131 @@
-Backend – Setup Guide
+# Backend -- Setup Guide
 
-This section helps you run the backend service for the Incentive Calculator System.
-Follow the steps in order and you’ll be up and running in minutes.
+This guide helps you set up and run the **Backend Service** for the
+**Incentive Calculator System**. Follow the steps below carefully and
+you'll be up and running in just a few minutes.
 
-🛠️ Technology Used
+------------------------------------------------------------------------
 
-FastAPI – Backend framework
+## 🛠️ Technology Stack
 
-Python – Programming language (version 3.10 or above)
+-   **FastAPI** -- Backend framework\
+-   **Python** -- Version 3.10 or higher\
+-   **MySQL** -- Relational database\
+-   **Uvicorn** -- ASGI application server
 
-MySQL – Database
+------------------------------------------------------------------------
 
-Uvicorn – Application server
+## ✅ Prerequisites
 
-✅ What You Need Before Starting
+Ensure the following are installed and properly configured on your
+system:
 
-Please ensure the following are available on your system:
+### Python
 
-Python (3.10 or higher)
-Check using:
+-   Version **3.10 or higher**
 
+``` bash
 python --version
+```
 
+### pip (Python Package Manager)
 
-pip (Python package manager)
-Check using:
-
+``` bash
 pip --version
+```
 
+### MySQL
 
-MySQL
+-   MySQL service must be running
+-   You should have valid database credentials
 
-MySQL service should be running
+------------------------------------------------------------------------
 
-You should have valid database credentials
+## 🗄️ Database Setup
 
-🗄️ Database Setup
+1.  **Create the database**
 
-Create the database:
-
+``` sql
 CREATE DATABASE incentive_calculator;
+```
 
+2.  **Select the database**
 
-Use the database:
-
+``` sql
 USE incentive_calculator;
+```
 
+3.  **Create required tables**
 
-Create required tables:
+-   Execute the SQL queries provided in the `schemas.sql` file
 
-Execute the SQL queries available in the schemas.sql file
+------------------------------------------------------------------------
 
-🔐 Configuration (Important)
+## 🔐 Environment Configuration
 
-Configuration values are kept outside the codebase for security reasons.
+For security reasons, sensitive configuration values are not stored in
+the codebase.
 
-Create a .env file locally
+1.  Create a `.env` file in the project root directory
+2.  Add the following environment variables:
 
-Add the following details:
-
+``` env
 DB_HOST=localhost
-DB_USER=
-DB_PASSWORD=
+DB_USER=your_db_user
+DB_PASSWORD=your_db_password
 DB_NAME=incentive_calculator
+```
 
+⚠️ Ensure these values match your local MySQL configuration.
 
-⚠️ Make sure these values match your local MySQL setup.
+> Note: The `.env` file is intentionally excluded from GitHub.
 
-📦 Install Required Packages
+------------------------------------------------------------------------
 
-All dependencies are already listed in the project.
+## 📦 Install Dependencies
 
-Run:
+All required dependencies are listed in the `requirements.txt` file.
 
+Run the following command:
+
+``` bash
 pip install -r requirements.txt
+```
 
-▶️ Start the Backend Server
+------------------------------------------------------------------------
 
-Launch the backend using the command below:
+## ▶️ Running the Backend Server
 
+Start the FastAPI backend using Uvicorn:
+
+``` bash
 uvicorn app.main:app --reload
+```
 
+Once the server starts successfully, the backend will be available at:
 
-Once started, the backend will be available at:
+    http://localhost:8000
 
-http://localhost:8000
+------------------------------------------------------------------------
 
-📘 API Documentation
+## 📘 API Documentation
 
-The backend automatically provides API documentation:
+FastAPI provides interactive API documentation out of the box.
 
-Swagger UI:
+-   **Swagger UI:**\
+    http://localhost:8000/docs
 
-http://localhost:8000/docs
+-   **ReDoc:**\
+    http://localhost:8000/redoc
 
+------------------------------------------------------------------------
 
-ReDoc:
+## 📝 Additional Notes
 
-http://localhost:8000/redoc
+-   Ensure the database is fully set up before starting the backend
+-   The backend and frontend run as independent services
+-   Configuration values should never be committed to version control
 
-📝 Additional Notes
+------------------------------------------------------------------------
 
-The .env file is intentionally excluded from GitHub
-
-Database must be set up before starting the backend
-
-Backend and frontend run as independent services
+Happy coding 🚀

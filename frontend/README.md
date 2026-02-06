@@ -1,94 +1,129 @@
-Frontend – Setup Guide
+# Frontend -- Setup Guide
 
-This section explains how to run the frontend service for the Incentive Calculator System.
-The frontend communicates with the backend APIs to display and manage data.
+This guide explains how to run the **Frontend Service** for the
+**Incentive Calculator System**. The frontend communicates with backend
+APIs to display and manage incentive data.
 
-🛠️ Technology Used
+------------------------------------------------------------------------
 
-Node.js – Runtime environment
+## 🛠️ Technology Stack
 
-Express – Web framework
+-   **Node.js** -- Runtime environment\
+-   **Express** -- Web framework\
+-   **JavaScript** -- Programming language\
+-   **npm** -- Package manager\
+-   **Nodemon** -- Auto-restart during development
 
-JavaScript – Programming language
+------------------------------------------------------------------------
 
-npm – Package manager
+## ✅ Prerequisites
 
-Nodemon – Auto-restart during development
+Ensure the following are installed on your system:
 
-✅ What You Need Before Starting
+### Node.js
 
-Please ensure the following are available on your system:
+-   Version **16 or higher**
 
-Node.js (version 16 or above)
-
-npm (comes bundled with Node.js)
-
-Check installation using:
-
+``` bash
 node -v
+```
+
+### npm
+
+-   Comes bundled with Node.js
+
+``` bash
 npm -v
+```
 
-⚙️ Setup Steps
-📍 Step 1: Go to the Frontend Folder
+------------------------------------------------------------------------
+
+## ⚙️ Setup Instructions
+
+### 📍 Step 1: Navigate to Frontend Directory
+
+``` bash
 cd frontend
+```
 
-📍 Step 2: Initialize the Project
+------------------------------------------------------------------------
 
-(Skip this step if package.json already exists)
+### 📍 Step 2: Initialize the Project
 
+> Skip this step if `package.json` already exists.
+
+``` bash
 npm init -y
-
+```
 
 This will create the project configuration file:
 
-package.json
+-   `package.json`
 
-📍 Step 3: Install Required Packages
+------------------------------------------------------------------------
+
+### 📍 Step 3: Install Required Packages
 
 Install Express:
 
+``` bash
 npm install express
+```
 
+This will generate:
 
-This will create:
+-   `node_modules/`
+-   `package-lock.json`
 
-node_modules/
+------------------------------------------------------------------------
 
-package-lock.json
-
-📍 Step 4: Enable Auto-Restart (Optional but Recommended)
+### 📍 Step 4: Enable Auto-Restart (Optional but Recommended)
 
 Install Nodemon for development:
 
+``` bash
 npm install nodemon --save-dev
+```
 
+Nodemon automatically restarts the server when code changes are
+detected.
 
-Nodemon automatically restarts the server whenever code changes are made.
+------------------------------------------------------------------------
 
-▶️ Start the Frontend Server
+## ▶️ Running the Frontend Server
 
-Using Nodemon:
+### Using Nodemon
 
+``` bash
 npx nodemon index.js
+```
 
+### Using npm script (if configured)
 
-Or using an npm script (if configured):
-
+``` bash
 npm run dev
+```
 
-🔗 Backend Connection
+------------------------------------------------------------------------
 
-Make sure the backend service is running before using the frontend.
+## 🔗 Backend Integration
 
-Backend URL:
+Ensure the backend service is running before starting the frontend.
 
-http://localhost:8000
+**Backend Base URL:**
 
+    http://localhost:8000
 
-The frontend uses this base URL to communicate with backend APIs.
+The frontend uses this URL to communicate with backend APIs.
 
-📝 Additional Notes
+------------------------------------------------------------------------
 
-Frontend and backend run as separate services
+## 📝 Additional Notes
 
-Backend must be running to test full functionality
+-   Frontend and backend run as independent services\
+-   Backend must be running to test full application functionality\
+-   Update API base URLs if backend runs on a different port or host
+
+------------------------------------------------------------------------
+
+Happy building 🚀
