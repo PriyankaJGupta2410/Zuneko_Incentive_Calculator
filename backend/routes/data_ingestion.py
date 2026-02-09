@@ -11,8 +11,6 @@ from database import get_connection
 from dateutil import parser as date_parser
 from typing import List,Dict
 import re
-import spacy
-nlp = spacy.load("en_core_web_sm")
 
 load_dotenv()
 data_ingestion_router = APIRouter()
