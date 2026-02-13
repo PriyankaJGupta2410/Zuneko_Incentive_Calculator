@@ -66,9 +66,9 @@ class EmployeeIncentive(BaseModel):
 # Top Performer Model
 # ----------------------------
 class TopPerformer(BaseModel):
-    employee_id: Optional[str] = None
-    branch: Optional[str] = None
-    role: Optional[str] = None
+    employee_id: str = ""
+    branch: str = ""
+    role: str = ""
     total_incentive: float = 0.0
 
 # ----------------------------
